@@ -1,0 +1,23 @@
+name: CI Test with MongoDB
+
+on:
+  push:
+    branches: [ "main" ] # hoặc đổi thành tên branch nhóm bạn
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - run: npm install
+      - run: npm test
