@@ -1,8 +1,8 @@
 const request = require('supertest');
-const app = require('../index'); // Đường dẫn đến file Express chính
+const app = require('../index'); // Import app từ index.js
 const mongoose = require('mongoose');
+require('dotenv').config(); // Đảm bảo nạp biến môi trường từ .env (có ích khi chạy local)
 
-// Kết nối MongoDB từ biến môi trường
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -10,16 +10,14 @@ beforeAll(async () => {
   });
 });
 
-// Ngắt kết nối sau khi test xong
 afterAll(async () => {
   await mongoose.connection.close();
 });
 
-// Ví dụ test API
 describe('🛒 API Giỏ hàng', () => {
-  it('Test đơn giản trả về danh sách sản phẩm', async () => {
-    const res = await request(app).get('/api/products'); // API này bạn đang có sẵn
+  it('Trả về danh sách sản phẩm', async () => {
+    const res = await request(app).get('/api/products');
     expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true); // Trả về mảng sản phẩm
+    expect(Array.isArray(res.body)).toBe(true);
   });
 });
