@@ -1,4 +1,4 @@
-name: 🚀 CI for Node.js App
+name: Node.js CI with MongoDB
 
 on:
   push:
@@ -10,21 +10,34 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-     MONGODB_URI: ${{ secrets.MONGODB_URI }}
-
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongosh --eval 'db.stats()'" 
+          --health-interval=10s 
+          --health-timeout=5s 
+          --health-retries=5
 
     steps:
-      - name: 📥 Checkout code
+      - name: ⬇ Checkout code
         uses: actions/checkout@v3
 
-      - name: 🧰 Setup Node.js
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 18
 
       - name: 📦 Install dependencies
         run: npm install
+
+      - name: ⚙️ Setup environment variables
+        run: echo "MONGODB_URI=${MONGODB_URI}" > .env
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      
 
       - name: 🧪 Run tests
         run: npm test
